@@ -1,5 +1,6 @@
 'use strict';
 IteroJS.baseUrl = "http://itero.demo.pactas.com/api/v1/";
+var providerReturnUrl = "http://<yourdomain>/finalize.html";
 
 /// The modal for the 3D-Secure popup needs a simple controller to pass along some data.
 var ChangePaymentMethodController = function ($scope, $modalInstance, token, iteroJS, onClose) {
@@ -17,6 +18,7 @@ var ChangePaymentMethodController = function ($scope, $modalInstance, token, ite
     };
 
     $scope.proceed = function () {
+        $scope.paymentData.returnUrl = providerReturnUrl;
         // change the payment method by sending the new payment information to iteroJS. This might
         // contain the actual credit card information, so don't log that information. IteroJS will
         // call the provider via javascript and exchange the data for a token or fake data.

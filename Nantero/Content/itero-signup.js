@@ -1,5 +1,6 @@
 'use strict';
 IteroJS.baseUrl = "http://itero.demo.pactas.com/api/v1/";
+var providerReturnUrl = "http://<yourdomain>/finalize.html";
 
 /// The modal for the 3D-Secure popup needs a simple controller to pass along some data.
 var ModalInstanceCtrl = function ($scope, $modalInstance, url, params, onclose) {
@@ -47,6 +48,7 @@ var SignupController = function ($scope, $http, $modal) {
             // Now, assign our newly created object's id as itero's "Tag" for the customer so we later know who is who:
             console.log("Assigning tag: " + nanteroResponse.Id);
             $scope.customerData.Tag = nanteroResponse.Id;
+            $scope.paymentData.returnUrl = providerReturnUrl;
 
             // And here goes the actual call to Pactas.Itero:
             self.iteroInstance.subscribe($scope.order, $scope.customerData, $scope.paymentData, function (data) {

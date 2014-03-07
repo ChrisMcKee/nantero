@@ -21,13 +21,17 @@
         This is <strong>alpha</strong> software to gather feedback on IteroJS, not for production yet!
     </div>
     <div data-ng-show="isSuccess" style="text-align: center;" data-ng-cloak>
-        <h1>Signup Successful!</h1>
+        <h1>Signup successful!</h1>
         <p>Thanks for signing up!</p>
+    </div>
+    <div data-ng-show="isError" style="text-align: center;" data-ng-cloak>
+        <h1>Signup failed!</h1>
+        <p>An error occurred during signup!</p>
     </div>
     <div data-ng-show="signupRunning" class="text-center" style="font-size: 36px; padding: 50px;" data-ng-cloak>
         <div class="loading"></div>Please Wait&hellip;
     </div>
-    <div data-ng-hide="isSuccess || signupRunning"  data-ng-cloak>
+    <div data-ng-hide="isSuccess || isError || signupRunning"  data-ng-cloak>
         <div>
             <h1>Sign Up</h1>
             <p class="lead">

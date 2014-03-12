@@ -1,12 +1,15 @@
 'use strict';
-IteroJS.baseUrl = "http://itero.demo.pactas.com/api/v1/";
+
+function errorHandler(errorData) {
+    console.log("An error occurred!", errorData);
+}
 
 /// The modal for the 3D-Secure popup needs a simple controller to pass along some data.
-var ChangePaymentMethodController = function ($scope, $modalInstance, token, iteroJS, onClose) {
+var ChangePaymentMethodController = function ($scope, $modalInstance, token, iteroJS, iteroJSPayment , onClose) {
     var self = this;
     $scope.paymentData = {};
-    $scope.paymentMethods = iteroJS.paymentMethods;
-    $scope.paymentMethodEnum = iteroJS.paymentMethodEnum;
+    $scope.paymentMethods = iteroJSPayment.getAvailablePaymentMethods();
+    $scope.paymentMethodEnum = iteroJSPayment.getAvailablePaymentMethodEnum();
 
     // A lookup for friendly strings of the payment methods
     $scope.paymentMethodNames = {
@@ -20,9 +23,11 @@ var ChangePaymentMethodController = function ($scope, $modalInstance, token, ite
         // change the payment method by sending the new payment information to iteroJS. This might
         // contain the actual credit card information, so don't log that information. IteroJS will
         // call the provider via javascript and exchange the data for a token or fake data.
-        iteroJS.changePaymentMethod(token, $scope.paymentData, function (data) {
+        iteroJS.paymentChange(iteroJSPayment, $scope.paymentData, function (data) {
             debug.log("changePaymentMethod returned", data);
             $modalInstance.close('done');
+        }, function (error) {
+            console.log("an error occurred!", error);
         });
     }
 
@@ -38,7 +43,7 @@ var CancelController = function ($scope, $modalInstance, contract, iteroJS) {
     $scope.contract = contract;
 
     $scope.cancelContract = function () {
-        iteroJS.cancelContract(function (data) {
+        iteroJS.contractCancel(function (data) {
             $modalInstance.close('done');
         }, function (error) {
             $modalInstance.dismiss('error: ' + error.Message);
@@ -46,7 +51,7 @@ var CancelController = function ($scope, $modalInstance, contract, iteroJS) {
     };
 };
 
-var ChangePlanController = function ($scope, $modalInstance, $http, productInfo) {
+var ChangePlanController = function ($scope, $modalInstance, $http, productInfo, iteroJS) {
     $scope.close = function () { $modalInstance.dismiss('cancel'); }
     $scope.productInfo = productInfo;
     $scope.dto = { targetPlanVariantId : "" };
@@ -54,14 +59,11 @@ var ChangePlanController = function ($scope, $modalInstance, $http, productInfo)
         if (!$scope.dto.targetPlanVariantId)
             return;
         $http.post("/upgrade", $scope.dto).success(function (data) {
-            var iteroUpgrade = new IteroJS.Upgrade();
             var orderId = data.Id;
             // Trigger a synchronous payment at pactas. The callback will be invoked once the payment has finished
-            iteroUpgrade.payUpgradeSync(null, orderId, function (data) {
+            iteroJS.upgradePaySync(orderId, function (data) {
                 $modalInstance.close('done');
-            }, function (data) {
-                console.log("Upgrade failed!", data);
-            });
+            }, errorHandler);
         });
     }
 }
@@ -81,13 +83,14 @@ var ChangeCustomerDataController = function ($scope, $modalInstance, customer, i
 
 var AccountController = function ($scope, $http, $modal) {
     var self = this;
+    var customerToken = null;
 
-    var config = {
-        // REQUIRED. Id of the calling entity
-        // TODO: Use a key instead that can be changed
-        "entityId": "",
+    var paymentConfig = {
+        // REQUIRED. An API key to associate your call.
+        "publicApiKey": "",
 
-        //REQUIRED. Specifies the redirect URL for PSPs like PayPal, Skrill, ...
+        // OPTIONAL for Paymill and PayOne, otherwise REQUIRED. Specifies the redirect URL for PSPs like PayPal, Skrill, ...
+        // FIXME: Nantero should get this from config
         "providerReturnUrl": "http://<yourdomain>/finalize.html",
 
         // OPTIONAL. Overwrite the handling of the 3d-secure iframes. Comment out these 
@@ -96,6 +99,7 @@ var AccountController = function ($scope, $http, $modal) {
         //"popupCreate": tdsInit,
         //"popupClose": tdsCleanup
     };
+
     $scope.cancelPlanDialog = function () {
         var modalInstance = $modal.open({
             templateUrl: 'cancel-dialog.html',
@@ -104,15 +108,13 @@ var AccountController = function ($scope, $http, $modal) {
             resolve: {
                 contract: function () { return $scope.plan; },
                 iteroJS: function () { return self.iteroInstance; },
-                token: function () { return config.token; }
+                token: function () { return customerToken; }
             }
         });
 
         modalInstance.result.then(function (result) {
             loadContract();
-        }, function () {
-            // TODO: Error Handling
-        });
+        }, errorHandler);
     }
 
     $scope.changePlanDialog = function () {
@@ -122,15 +124,14 @@ var AccountController = function ($scope, $http, $modal) {
             windowClass: "fade in",
             resolve: {
                 productInfo : function() { return $scope.plan.Products; },
-                token: function () { return config.token; }
+                token: function () { return customerToken; },
+                iteroJS : function() { return self.iteroInstance; }
             }
         });
 
         modalInstance.result.then(function (result) {
             loadContract();
-        }, function () {
-            // TODO: Error Handling
-        });
+        }, errorHandler);
     }
 
     $scope.changeCustomerData = function () {
@@ -146,13 +147,13 @@ var AccountController = function ($scope, $http, $modal) {
 
         modalInstance.result.then(function (result) {
             loadContract();
-        }, function () {
-            // TODO: Error Handling
-        });
+        }, errorHandler);
     }
 
     $scope.changePaymentMethod = function () {
-        var iteroJSCPM = new IteroJS.ChangePaymentMethod(config, function () {
+        var iteroJSPayment = new IteroJS.Payment(paymentConfig, function() {
+            // when the payment has loaded, show the modal
+            // TBD: wouldn't it be better to show the modal with a loading indicator?
             var modalInstance = $modal.open({
                 templateUrl: 'change-payment-method.html',
                 controller: ChangePaymentMethodController,
@@ -161,39 +162,37 @@ var AccountController = function ($scope, $http, $modal) {
                     onClose: function () {
                         return function () { };
                     },
-                    //iteroJS: function () { return iteroJSCPM; },
-                    token: function() { return config.token; }
+                    iteroJS: function () { return self.iteroInstance; },
+                    iteroJSPayment : function( ) { return iteroJSPayment; },
+                    token: function () { return customerToken; }
                 }
             });
 
             modalInstance.result.then(function (result) {
                 loadContract();
-            }, function () {
-                // TODO: Error Handling
-            });
-        });
+            }, errorHandler);
+        }, errorHandler);
     }
 
     $scope.downloadUrl = function (invoiceId) {
         // Return a download URL based on the invoice id. This is basically a string concatenation helper
-        return self.iteroInstance.downloadUrl(invoiceId);
+        return self.iteroInstance.invoicePdfDownloadUrl(invoiceId);
     };
 
     function loadContract() {
-        self.iteroInstance.getContractDetails(function (data) {
+        self.iteroInstance.contractDetails(function (data) {
             $scope.$apply(function () {
                 $scope.plan = data;
             });
-        });
+        }, errorHandler);
     }
 
     $http({ method: "GET", url: "/config", cache: false }).success(function (data) {
         console.log("nantero config loaded", data);
-        config.entityId = data.EntityId;
-        config.baseUrl = data.IteroBaseUrl;
-        config.token = data.Token;
+        paymentConfig.publicApiKey = data.EntityId;
+        customerToken = data.Token;
 
-        self.iteroInstance = new IteroJS.Portal(config);
+        self.iteroInstance = new IteroJS.Portal(customerToken);
         loadContract();
     });  
 };

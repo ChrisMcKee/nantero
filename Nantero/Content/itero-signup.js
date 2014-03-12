@@ -1,5 +1,4 @@
 'use strict';
-IteroJS.baseUrl = "http://itero.demo.pactas.com/api/v1/";
 
 /// The modal for the 3D-Secure popup needs a simple controller to pass along some data.
 var ModalInstanceCtrl = function ($scope, $modalInstance, url, params, onclose) {
@@ -49,17 +48,12 @@ var SignupController = function ($scope, $http, $modal) {
             $scope.customerData.Tag = nanteroResponse.Id;
 
             // And here goes the actual call to Pactas.Itero:
-            self.iteroInstance.subscribe($scope.order, $scope.customerData, $scope.paymentData, function (data) {
+            self.iteroInstance.subscribe(self.iteroJSPayment, $scope.order, $scope.customerData, $scope.paymentData, function (data) {
                 // This callback will be invoked when the signup succeeded (or failed)
                 $scope.$apply(function () {
                     // must use $apply, otherwise angularjs won't notice we're changing the $scope's state
                     $scope.signupRunning = false;
-                    if (data.Error) {
-                        // TODO: Error handling! 
-                        debug.error("error: ", data.Error);
-                        $scope.isError = true;
-                    }
-                    else if (data.Success) {
+                    if (data.Success) {
                         if (!data.Success.Url)
                             // done - we're finished and the payment has succeeded. We could notify nantero that the signup 
                             // has completed from here, but that would be dangerous because this code is public and not reliable. 
@@ -74,6 +68,10 @@ var SignupController = function ($scope, $http, $modal) {
                         }
                     }
                 });
+            }, function (error) {
+                // TODO: Error handling! 
+                debug.error("error: ", data.Error);
+                $scope.isError = true;
             });
         });
     };
@@ -88,16 +86,13 @@ var SignupController = function ($scope, $http, $modal) {
                 // checkbox to show the whole thing:
                 $scope.order = data.Order;
             });
-        });
+        }, function (error) { console.log("error in preview!", error); });
     };
 
     var config = {
         // REQUIRED. Id of the calling entity
         // This will probably change to an API key in the final version
         "entityId": "",
-
-        // REQUIRED. The initial order to be displayed. This will be requested immediately upon load, but it can be empty
-        "initialOrder": { planVariantId: "" },
 
         //REQUIRED. Specifies the redirect URL for PSPs like PayPal, Skrill, ...
         "providerReturnUrl" : "http://<yourdomain>/finalize.html",
@@ -107,27 +102,42 @@ var SignupController = function ($scope, $http, $modal) {
     // but keeping the data in one central location can't hurt:
     $http({ method: "GET", url: "/config", cache: false }).success(function (data) {
         console.log("nantero config loaded", data);
-        config.entityId = data.EntityId;
-        config.initialOrder.planVariantId = data.InitialPlanVariantId;
+        config.publicApiKey = data.EntityId;
         config.baseUrl = data.IteroBaseUrl;
+
+        var paymentConfig = config;
 
         // Create an instance of the IteroJS.Subscribe helper. This call will load
         // your configured payment methods from the server and any libraries that might
         // be additionally required, so this call is expensive:
-        self.iteroInstance = new IteroJS.Subscribe(config, function () {
+        self.iteroInstance = new IteroJS.Signup();
+
+        var cart = { planVariantId: data.InitialPlanVariantId };
+        //self.iteroInstance.preview(cart, customer, succes, error);
+        self.iteroInstance.preview(cart, {}, function (data) {
+            console.log("preview", data);
+            $scope.$apply(function () {
+                $scope.order = data.Order;
+            });
+
+        }, function (error) { });
+
+        self.iteroJSPayment = new IteroJS.Payment(paymentConfig, function () {
+            console.log("Payment loaded successfully!");
             $scope.$apply(function () {
                 // When IteroJS is ready, copy the payment methods and initial order
                 $scope.paymentReady = true;
-                $scope.paymentMethods = self.iteroInstance.paymentMethods;
-                $scope.paymentMethodEnum = self.iteroInstance.paymentMethodEnum;
+                $scope.paymentMethods = self.iteroJSPayment.getAvailablePaymentMethods();
+                $scope.paymentMethodEnum = self.iteroJSPayment.getAvailablePaymentMethodEnum();
                 $scope.paymentData.bearer = $scope.paymentMethodEnum[0];
-                $scope.order = self.iteroInstance.quote.Order;
-                if ($scope.order.AllowWithoutPaymentData) {
-                    $scope.paymentMethods.None = {};
-                    $scope.paymentMethodEnum.push("None:None");
-                }
+                
+                // FIXME: THAT'S REALLY MESSY!
+                //if ($scope.order.AllowWithoutPaymentData) {
+                //    $scope.paymentMethods.None = {};
+                //    $scope.paymentMethodEnum.push("None:None");
+                //}
             });
-        });
+        }, function (error) { console.log("error loading the payment", error); });
     });
 };
 

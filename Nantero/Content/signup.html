@@ -66,6 +66,12 @@
                     <td class="text-right">{{order.RecurringFee.Quantity}}</td>
                     <td class="text-right">{{order.RecurringFee.TotalNet + order.RecurringFee.TotalVat  | number:2}}</td>
                 </tr>
+                <tr>
+                    <td>{{order.SetupFee.Name}}</td>
+                    <td class="text-right">{{order.SetupFee.PricePerUnit | number:2}}</td>
+                    <td class="text-right">{{order.SetupFee.Quantity}}</td>
+                    <td class="text-right">{{order.SetupFee.TotalNet + order.SetupFee.TotalVat  | number:2}}</td>
+                </tr>
                 <tr data-ng-repeat="component in order.ComponentSubscriptions">
                     <td>{{component.Name}}</td>
                     <td class="text-right">{{component.PricePerUnit | number:2}}</td>

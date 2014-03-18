@@ -7,7 +7,11 @@ namespace Pactas.SDK.DTO
         public string ComponentId { get; set; }
         public string ExternalComponentId { get; set; }
 
-        public decimal Amount { get; set; }
+        public decimal Quantity { get; set; }
+
+        [Obsolete("Use Quantity instead")]
+        public decimal? Amount { get; set; }
+
         public string Memo { get; set; }
 
         /// <summary>

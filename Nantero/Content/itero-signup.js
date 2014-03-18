@@ -70,7 +70,7 @@ var SignupController = function ($scope, $http, $modal) {
                 });
             }, function (error) {
                 // TODO: Error handling! 
-                debug.error("error: ", data.Error);
+                debug.error("error: ", error);
                 $scope.isError = true;
             });
         });
@@ -106,10 +106,6 @@ var SignupController = function ($scope, $http, $modal) {
         config.baseUrl = data.IteroBaseUrl;
 
         var paymentConfig = config;
-
-        // Create an instance of the IteroJS.Subscribe helper. This call will load
-        // your configured payment methods from the server and any libraries that might
-        // be additionally required, so this call is expensive:
         self.iteroInstance = new IteroJS.Signup();
 
         var cart = { planVariantId: data.InitialPlanVariantId };

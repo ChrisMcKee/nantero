@@ -66,9 +66,14 @@ namespace Pactas.SDK.DTO.SelfService
 
     public class OrderDTO
     {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime? BilledUntil { get; set; }
+
+        public string CustomerId { get; set; } // Used for existing customers
         public string ContractId { get; set; }
         public CartDTO Cart { get; set; }
-        public CustomerDTO Customer { get; set; }
+        public CustomerDTO Customer { get; set; } // Used for new customers
     }
 
     public class OrderSelfServiceDTO
@@ -172,20 +177,7 @@ namespace Pactas.SDK.DTO.SelfService
         public string SelectedPaymentMethod { get; set; }
         public decimal? MaxDebitAmount { get; set; }
         public PSPBearerDTO Bearer { get; set; }
-    }
-
-    public class PaymentSuccessDTO
-    {
-        public string ContractId { get; set; }
-        public string CustomerId { get; set; }
-        public decimal Amount { get; set; }
-        public string Url { get; set; }
-    }
-
-    public class PaymentResponseDTO
-    {
-        public CustomerSelfServiceErrorDTO Error { get; set; }
-        public PaymentSuccessDTO Success { get; set; }
+        public string ReturnUrl { get; set; }
     }
 
     public class FinalizeDTO
@@ -200,25 +192,42 @@ namespace Pactas.SDK.DTO.SelfService
         public TetheredPaymentDataDTO PaymentData { get; set; }
     }
 
+#region Response DTOs
 
     public class CustomerSelfServiceErrorDTO
     {
-        public string ErrorMessage { get; set; }
-        public string UserErrorMessage { get; set; }
+        public CustomerSelfServiceErrorDTO()
+        {
+            Code = "";
+            Message = "";
+            Details = "";
+        }
+
+        public string Code { get; set; }
+        public string Message { get; set; }
+        public string UserMessage { get; set; }
         public string PaymentTransactionStatus { get; set; }
         public string Details { get; set; }
     }
 
-    public class SubscribeSuccessDTO : PaymentSuccessDTO
+    public class CustomerSelfServiceSuccessDTO
     {
         public string OrderId { get; set; }
+        public string ContractId { get; set; }
+        public string CustomerId { get; set; }
+        public decimal GrossTotal { get; set; }
+        public string Url { get; set; }
+
+        public string Currency { get; set; }
     }
 
-    public class SubscribeResponseDTO
+    public class CustomerSelfServiceResponseDTO
     {
         public CustomerSelfServiceErrorDTO Error { get; set; }
-        public SubscribeSuccessDTO Success { get; set; }
+        public CustomerSelfServiceSuccessDTO Success { get; set; }
     }
+
+#endregion
 
     public class CustomerSelfServiceDTO
     {
@@ -227,6 +236,9 @@ namespace Pactas.SDK.DTO.SelfService
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
+
+        public string Tag { get; set; }
+        public string ExternalCustomerId { get; set; }
 
         /// <summary>
         /// The customer's preffered locale, e.g. "de-AT", "en-US", etc.
@@ -290,8 +302,6 @@ namespace Pactas.SDK.DTO.SelfService
         public decimal TotalGross { get; set; }
 
         public bool IsInvoice { get; set; }
-
-        public decimal RemainingTotal { get; set; }//todo: Is is still needed?
     }
 
     public class PaymentDataSelfServiceReadDTO

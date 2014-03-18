@@ -22,6 +22,13 @@ namespace Pactas.SDK.DTO
         public AddressDTO Address { get; set; }
         public string TimeZoneKey { get; set; } //TODO: Set this information or get it somewhere else when creating the contract object
         public string Locale { get; set; }
+        /// <summary>
+        /// The 2-letter ISO country code in capital letters, e.g. DE
+        /// </summary>
+        [StringLength(2, MinimumLength = 2)]
+        [CustomValidation(typeof(AddressValidation), "ValidateCountry")]
+        public string ServiceCountry { get; set; }
+        public CustomerType CustomerType { get; set; }
 
         public string CustomerName
         {

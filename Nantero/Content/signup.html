@@ -9,16 +9,19 @@
     <link rel="stylesheet" href="styles/iterojs.css" />
     <script type="text/javascript" src="lib/ba-debug.min.js"></script>
     <script type="text/javascript" src="http://itero.demo.pactas.com/selfService/iterojs"></script>
+    <!--<script type="text/javascript" src="http://localhost/selfService/iterojs"></script>-->
 </head>
 <body data-ng-app="iteroAngular" id="ng-app">
     <a href="https://github.com/Pactas/nantero">
-        <img style="position: fixed; top: 0; right: 0; border: 0; z-index: 200;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+        <img style="position: fixed; top: 0; right: 0; border: 0; z-index: 200;" 
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
     </a>
 
     <div class="container" data-ng-controller="SignupController" id="myController">
-    <div class="alert alert-danger">
-        <h4>Buckle Up!</h4>
-        This is <strong>alpha</strong> software to gather feedback on IteroJS, not for production yet!
+    <div class="alert alert-info">
+        <h4>Ahoy!</h4>
+        This is an <strong>example</strong> implementation on how to use <a href="http://developer.pactas.com/Docs/IteroJS">Pactas IteroJS</a> to drive 
+        your subscription business. You can also <a href="https://github.com/Pactas/nantero">fork me on github</a>.
     </div>
     <div data-ng-show="isSuccess" style="text-align: center;" data-ng-cloak>
         <h1>Signup successful!</h1>

@@ -12,8 +12,6 @@
     <script type="text/javascript" src="/scripts/angular.js"></script>
     <script type="text/javascript" src="lib/angular-ui-modal.js"></script>
     <script type="text/javascript">
-        IteroJS.baseUrl = "http://itero.demo.pactas.com/api/v1/";
-
         var FinalizeController = function ($scope, $http, $modal) {
             var self = this;
             IteroJS.finalize(function (result) {

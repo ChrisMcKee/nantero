@@ -9,8 +9,14 @@
     <link rel="stylesheet" href="styles/iterojs.css" />
     <script type="text/javascript" src="lib/ba-debug.min.js"></script>
     <script type="text/javascript" src="http://itero.demo.pactas.com/selfService/iterojs"></script>
+    <!--<script type="text/javascript" src="http://localhost/selfService/iterojs"></script>-->
 </head>
 <body data-ng-app="iteroAngular" id="ng-app">
+    <a href="https://github.com/Pactas/nantero">
+        <img style="position: fixed; top: 0; right: 0; border: 0; z-index: 200;"
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
     <script type="text/ng-template" id="cancel-dialog.html">
         <div class="modal-header">
             <button type="button" class="close" data-ng-click="close()" aria-hidden="true">&times;</button>
@@ -103,6 +109,12 @@
     </script> 
 
     <div class="container" data-ng-controller="AccountController">
+        <div class="alert alert-info">
+            <h4>Ahoy!</h4>
+            This is an <strong>example</strong> of a self-service customer portal using <a href="http://developer.pactas.com/Docs/IteroJS">Pactas IteroJS</a>
+            to automate your subscription business. You can also <a href="https://github.com/Pactas/nantero">fork me on github</a>.
+        </div>
+
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <h2>{{plan.Customer.FirstName}} {{plan.Customer.LastName}}<span class="small">{{plan.Customer.CompanyName}}</span></h2>

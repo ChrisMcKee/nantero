@@ -143,7 +143,7 @@ namespace Pactas.SDK.DTO
         Paymill = 3,
         DTAUS = 4,
         Skrill = 5,
-        FakeProvider = 6, // Not Fake anymore, because of reflection usage
+        FakeProvider = 6,
         InvoicePayment = 7,
         PayOne = 8,
         None = 9
@@ -213,4 +213,5 @@ namespace Pactas.SDK.DTO
         ExecutiveBoard = 1,
         Other = 2
     }
+
 }

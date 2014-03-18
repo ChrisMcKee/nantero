@@ -24,8 +24,6 @@ namespace Pactas.SDK.DTO
         public decimal TotalGross { get; set; }
 
         public bool IsInvoice { get; set; }
-
-        public decimal RemainingTotal { get; set; }//todo: Is is still needed?
     }
 
     public class InvoiceDetailDTO : InvoiceListDTO

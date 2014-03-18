@@ -120,15 +120,19 @@
     <Compile Include="DTO\BillingSettingsDTO.cs" />
     <Compile Include="DTO\CalcBilledUntilDTO.cs" />
     <Compile Include="DTO\BackupSettingsDTO.cs" />
+    <Compile Include="DTO\ContractCancellationDTO.cs" />
+    <Compile Include="DTO\CancellationReadDTO.cs" />
     <Compile Include="DTO\ComponentDTO.cs" />
     <Compile Include="DTO\ComponentSubscriptionDTO.cs" />
     <Compile Include="DTO\ComponentTypeDTO.cs" />
+    <Compile Include="DTO\ContractEndDTO.cs" />
     <Compile Include="DTO\ContractOrderDTO.cs" />
     <Compile Include="DTO\ContractDTO.cs" />
     <Compile Include="DTO\ContractPaymentDTO.cs" />
     <Compile Include="DTO\ContractRiskDTO.cs" />
     <Compile Include="DTO\ContractTerminationDTO.cs" />
     <Compile Include="DTO\ContractUpgradeDTO.cs" />
+    <Compile Include="DTO\CustomerType.cs" />
     <Compile Include="DTO\DunningDTO.cs" />
     <Compile Include="DTO\EscalationChecksDTO.cs" />
     <Compile Include="DTO\InvoiceBuilderDTO.cs" />
@@ -138,7 +142,6 @@
     <Compile Include="DTO\PaymentEscalationProcessDTO.cs" />
     <Compile Include="DTO\PaymentProviderWarningDTO.cs" />
     <Compile Include="DTO\ProAndEpilogueDTO.cs" />
-    <Compile Include="DTO\SelfServiceSettingsDTO.cs" />
     <Compile Include="DTO\CountryDTO.cs" />
     <Compile Include="DTO\DashboardDTOs.cs" />
     <Compile Include="DTO\EmailTemplateDTO.cs" />
@@ -152,6 +155,7 @@
     <Compile Include="DTO\PaymentTransactionDTO.cs" />
     <Compile Include="DTO\HookDTO.cs" />
     <Compile Include="DTO\MeteredUsageDTO.cs" />
+    <Compile Include="DTO\SelfServiceSettingsDTO.cs" />
     <Compile Include="DTO\SelfServiceTokenDTO.cs" />
     <Compile Include="DTO\SelfService\DTOs.cs" />
     <Compile Include="DTO\SetTrialEndDTO.cs" />

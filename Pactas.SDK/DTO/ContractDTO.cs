@@ -81,6 +81,8 @@ namespace Pactas.SDK.DTO
 
         public string PlanVariantId { get; set; }
         public string Notes { get; set; }
+
+        public string PaymentMethod { get; set; }
     }
 
     public class ContractReadDTO : ContractDTO
@@ -92,9 +94,7 @@ namespace Pactas.SDK.DTO
 
         public string PlanId { get; set; }//denormalized
         public string CustomerId { get; set; }
-
-        // public ObjectId PredecessorContractId { get; set; }
-
+        
         public ContractLifecycleStatus LifecycleStatus { get; set; }
         // Status (trial, cancelled, trial not extended,  ...)
 

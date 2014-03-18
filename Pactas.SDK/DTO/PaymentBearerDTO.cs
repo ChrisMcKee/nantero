@@ -7,7 +7,7 @@ namespace Pactas.SDK.DTO
 {
     public abstract class PaymentBearerDTO
     {
-        public abstract string Type { get; }
+        public abstract string Type { get; protected set; }
     }
 
     public class PaymentBearerCreditCardDTO : PaymentBearerDTO
@@ -42,7 +42,7 @@ namespace Pactas.SDK.DTO
         /// </summary>
         public string Last4 { get; set; }
 
-        public override string Type { get { return "CreditCard"; } }
+        public override string Type { get { return "CreditCard"; } protected set { } }
     }
 
     public class PaymentBearerBankAccountDTO : PaymentBearerDTO
@@ -70,6 +70,19 @@ namespace Pactas.SDK.DTO
         public string IBAN { get; set; }
         public string BIC { get; set; }
 
-        public override string Type { get { return "BankAccount"; } }
+        public override string Type { get { return "BankAccount"; } protected set { } }
     }
+
+    public class PaymentBearerBlackLabelDTO : PaymentBearerDTO
+    {
+        public PaymentBearerBlackLabelDTO(PaymentProvider provider)
+        {
+            if (provider == PaymentProvider.InvoicePayment)
+                Type = "auf Rechnung"; //HACK: PaymentBearerBlackLabelDTO is solely used in self service so for the moment this is ok, but it is really hacky.
+            else
+                Type = provider.ToString("G");
+        }
+        public override string Type { get; protected set; }
+    }
+
 }

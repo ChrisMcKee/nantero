@@ -44,7 +44,7 @@ var SignupController = function ($scope, $http, $modal) {
                 return; // error.
 
             // Now, assign our newly created object's id as itero's "Tag" for the customer so we later know who is who:
-            console.log("Assigning tag: " + nanteroResponse.Id);
+            console.log("Assigning customer tag: " + nanteroResponse.Id);
             $scope.customerData.Tag = nanteroResponse.Id;
 
             // And here goes the actual call to Pactas.Itero:
@@ -53,19 +53,17 @@ var SignupController = function ($scope, $http, $modal) {
                 $scope.$apply(function () {
                     // must use $apply, otherwise angularjs won't notice we're changing the $scope's state
                     $scope.signupRunning = false;
-                    if (data.Success) {
-                        if (!data.Success.Url)
-                            // done - we're finished and the payment has succeeded. We could notify nantero that the signup 
-                            // has completed from here, but that would be dangerous because this code is public and not reliable. 
-                            // So we'll wait for the webhook in the backend. Also...
-                            $scope.isSuccess = true;
-                        else {
-                            // ... we might have to redirect the user to Skrill or PayPal, in which case the payment hasn't
-                            // really completed yet. So let's perform the redirect:
-                            window.location = data.Success.Url;
-                            // If we got into this branch, we're giving up flow control. The user will hopefully come back
-                            // to finalize.html
-                        }
+                    if (!data.Url)
+                        // done - we're finished and the payment has succeeded. We could notify nantero that the signup 
+                        // has completed from here, but that would be dangerous because this code is public and not reliable. 
+                        // So we'll wait for the webhook in the backend. Also...
+                        $scope.isSuccess = true;
+                    else {
+                        // ... we might have to redirect the user to Skrill or PayPal, in which case the payment hasn't
+                        // really completed yet. So let's perform the redirect:
+                        window.location = data.Url;
+                        // If we got into this branch, we're giving up flow control. The user will hopefully come back
+                        // to finalize.html
                     }
                 });
             }, function (error) {

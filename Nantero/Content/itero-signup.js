@@ -14,7 +14,7 @@ var SignupController = function ($scope, $http, $modal) {
     var self = this;
     $scope.order = null;
     // Some default data so we don't have to enter a ton of info every time
-    $scope.customerData = { firstName: "Marcellus", lastName: "Wallace", email: "mw@example.com" };
+    $scope.customerData = { firstName: "Marcellus", lastName: "Wallace", emailAddress: "mw@example.com" };
     $scope.paymentData = { bearer: "CreditCard:Paymill", "cardNumber": "5169147129584558", cardHolder: "Marcellus Wallace", cvc: "911", expiryMonth: "12", expiryYear: "2015" };
     $scope.paymentMethods = {};
     $scope.paymentMethodEnum = [];

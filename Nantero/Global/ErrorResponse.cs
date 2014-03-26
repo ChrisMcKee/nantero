@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using Nancy;
 using Nancy.ErrorHandling;
@@ -12,6 +11,9 @@ using CodeContract = System.Diagnostics.Contracts.Contract;
 
 namespace Nantero.Global
 {
+    /// <summary>
+    /// From Octopus Deploy / Paul Stovell, http://paulstovell.com/blog/consistent-error-handling-with-nancy
+    /// </summary>
     public class ErrorResponse : JsonResponse
     {
         readonly Error error;
@@ -34,32 +36,11 @@ namespace Nantero.Global
 
         public static ErrorResponse FromException(Exception ex)
         {
-            //var exception = ex.GetRootError();
             var exception = ex;
-
             var summary = exception.Message;
-            if (exception is System.Net.WebException || exception is SocketException)
-            {
-                // Commonly returned when connections to RavenDB fail
-                summary = "The Octopus windows service may not be running: " + summary;
-            }
-
             var statusCode = HttpStatusCode.InternalServerError;
 
             var error = new Error { ErrorMessage = summary, FullException = exception.ToString() };
-
-            //// Special cases
-            //if (exception is ResourceNotFoundException)
-            //{
-            //    statusCode = HttpStatusCode.NotFound;
-            //    error.FullException = null;
-            //}
-
-            //if (exception is OctopusSecurityException)
-            //{
-            //    statusCode = HttpStatusCode.Forbidden;
-            //    error.FullException = null;
-            //}
 
             var response = new ErrorResponse(error);
             response.StatusCode = statusCode;
@@ -111,7 +92,7 @@ namespace Nantero.Global
                     context.Response = new ErrorHtmlPageResponse(statusCode)
                     {
                         Title = "Permission",
-                        Summary = error == null ? "Sorry, you do not have permission to perform that action. Please contact your Octopus administrator." : error.ErrorMessage
+                        Summary = error == null ? "Sorry, you do not have permission to perform that action." : error.ErrorMessage
                     };
                     break;
                 case HttpStatusCode.NotFound:
@@ -205,7 +186,7 @@ namespace Nantero.Global
             {
                 parameters["ErrorDetails"] = "<h3>Details</h3><pre>" + Details + "</pre>";
             }
-            parameters["EmailSubject"] = "Error from Octopus: " + Summary;
+            parameters["EmailSubject"] = "Error: " + Summary;
             return parameters;
         }
     }

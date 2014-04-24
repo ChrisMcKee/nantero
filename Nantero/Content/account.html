@@ -140,7 +140,7 @@
                         <tr>
                             <th>Add-On</th>
                             <th>Memo</th>
-                            <th>Amount</th>
+                            <th>Quantity</th>
                             <th>Start</th>
                             <th>End</th>
                         </tr>
@@ -149,7 +149,7 @@
                         <tr ng-repeat="subscription in plan.ComponentsSubscriptions">
                             <td>{{subscription.ComponentName}}</td>
                             <td>{{subscription.Memo}}</td>
-                            <td>{{subscription.Amount}}</td>
+                            <td>{{subscription.Quantity}}</td>
                             <td>{{subscription.StartDate | date:"yyyy-MM-dd HH:mm"}}</td>
                             <td>{{subscription.EndDate | date:"yyyy-MM-dd HH:mm"}}</td>
                         </tr>
